@@ -1,0 +1,5 @@
+**\.idea
+*.o
+*,exe
+**\CMakeFiles
+**\cmake-build-debug
