@@ -2,103 +2,134 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <iomanip>
+#include <cmath>
+
 using namespace  std;
 
-static int simple_year[] = {31,28,31,30,31,30,31,31,30,31,30,31};
-static int special_year[] = {31,28,31,30,31,30,31,31,30,31,30,31};
-class Date{
-    int year, month, day;
+class Point {
+
+    double x,y;
 public:
-    Date();
-    Date(int y, int n , int d);
-    int getYear();
-    int getMonth();
-    int getDay();
-    void setDate(int y, int m, int d);
-    void print();
-    void addoneDay();
-    int daysInThisMonth(int year, int month){
-        if(isSpecialYear(year)){
-            return special_year[month - 1];
-        }else{
-            return simple_year[month - 1];
-        }
-    }
-    int isSpecialYear(int year){
-        if(year % 100 == 0){
-            return (year % 400 == 0);
-        }else return (year % 4 == 0);
+    double getX() const;
+
+    void setX(double x);
+
+    double getY() const;
+
+    void setY(double y);
+
+    Point (){
+        x = 0, y = 0;
     }
 
-    void goNextMonth();
+    Point(double x_, double y_){
+        x = (x_);
+        y = (y_);
+    }
+
+    double ydist(Point * point);
+
+    double xdist(Point * point);
+
+    double distanceToAnotherPoint(Point *p_){
+        return sqrt(xdist(p_) * xdist(p_) + ydist(p_) * ydist(p_));
+    }
+
+    ~Point(){
+        x = y = 0;
+        cout << "point clear" << endl;
+    }
+
 };
 
-Date::Date()
-{
+double Point::getX() const {
+    return x;
 }
 
-Date::Date(int y, int m, int d)
-{
-    year = y;
-    month = m;
-    day = d;
-}
-int Date::getYear()
-{
-    return year;
+void Point::setX(double x) {
+    Point::x = x;
 }
 
-int Date::getMonth()
-{
-    return month;
+double Point::getY() const {
+    return y;
 }
 
-int Date::getDay()
-{
-    return day;
+void Point::setY(double y) {
+    Point::y = y;
 }
 
-void Date::setDate(int y, int m, int d)
-{
-    year = y;
-    month = m;
-    day =d;
-}
-void Date::print()
-{
-    cout<< year << "/" << month << "/" << day << endl;
+double Point::ydist(Point *point) {
+    return abs(point->y - y);
 }
 
-void Date::addoneDay()
-{
-    day = day + 1;
-    if(daysInThisMonth(year, month) < day){
-        goNextMonth();
-        day = 1;
+double Point::xdist(Point *point) {
+    return abs(point->x - x);
+}
+
+class Circle {
+
+public :
+    Point * pts;
+    double radius;
+
+    Circle(){
+        pts = new Point();
     }
-}
 
-void Date::goNextMonth(){
-    if(month == 12){
-        year ++;
-        month = 1;
-    }else{
-        month ++;
+    Circle (double x, double y, double rad){
+        pts = new Point(x,y);
+        radius = rad;
     }
+
+    ~Circle(){
+        delete pts;
+        cout << "circle clear"<< endl;
+    }
+
+
+    bool contain(Point *p){
+        return p->distanceToAnotherPoint(pts) <= radius;
+    }
+
+};
+
+void checkContains(Circle circle, Point *pPoint);
+
+void getPoint(Point * pt){
+    int x1,y1;
+    cin >> x1 >> y1;
+    pt->setX(x1);
+    pt->setY(y1);
 }
 
 int main()
 {
 
-    int yy, mm , dd, t;
-    cin >> t;
-    while(t -- ){
-        cin >> yy >> mm >> dd;
-    	Date date(yy, mm, dd);
-	    cout<< "Today is:";
-        date.print();
-        date.addoneDay();
-        cout<< "Tomorrow is:";
-        date.print();
+    int n, t;
+    //cin >> t;
+    Point * pt;
+    Point * ptArray;
+    //while(t -- ){
+    pt = new Point();
+    getPoint(pt);
+    cin >> n;
+    ptArray = new Point[n];
+    for (int i = 0; i < n; ++i) {
+        getPoint(&ptArray[i]);
     }
+    double x0, y0, rad;
+    cin >> x0>>y0>>rad;
+    Circle cir(x0, y0, rad);
+    checkContains(cir, pt);
+    for (int i = 0; i < n; ++i) {
+        checkContains(cir, &ptArray[i]);
+    }
+    //}
  }
+
+void checkContains(Circle circle, Point * pPoint) {
+    if(circle.contain(pPoint)){
+        cout << "in" << endl;
+    }else cout << "out" << endl;
+}
