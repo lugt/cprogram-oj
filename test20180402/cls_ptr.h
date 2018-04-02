@@ -6,6 +6,7 @@
 #define TEST20180402_CLS_PTR_H
 
 #include<iostream>
+#include <vector>
 
 using namespace std;
 
@@ -33,33 +34,34 @@ public:
     string name;
 };
 
+
 void Sort(Student ptr[], int n) {
     int i, j;
     string name_temp;
     for (j = 0; j < n - 1; j++)
+    {
         for (i = 0; i < n - 1 - j; i++) {
-            if (ptr[i].name.compare(ptr[i + 1].name));
+            if (ptr[i].name.compare(ptr[i + 1].name) >= 0)
             {
                 name_temp = ptr[i].name;
                 ptr[i].name = ptr[i + 1].name;
                 ptr[i + 1].name = name_temp;
             }
         }
+    }
 }
 
 
 int main(void) {
     int t;
     cin >> t;
-    Student *sb;
+    Student * sb;
     string name_2;
     string sex_2;
     long number_2;
     string collage_2;
     long tel_2;
     sb = new Student[t];
-
-
 
     for (int i = 0; i < t; i++) {
         string str;
