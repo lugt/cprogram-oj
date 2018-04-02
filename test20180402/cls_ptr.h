@@ -7,6 +7,8 @@
 
 #include<iostream>
 #include <vector>
+#include <sstream>
+#include <cstdio>
 
 using namespace std;
 
@@ -19,9 +21,9 @@ private:
 public:
     void NAME(string name_1) { name = name_1; }
 
-    void NAME(std::istream & cin_){
+    /*void NAME(std::istream & cin_){
         cin_ >> name;
-    }
+    }*/
 
     void SEX(string sex_1) { sex = sex_1; }
 
@@ -63,20 +65,35 @@ int main(void) {
     long tel_2;
     sb = new Student[t];
 
-    for (int i = 0; i < t; i++) {
-        string str;
-        sb[i].NAME(cin);
+    string str, line;
+    //char stm[200000] = {};
+    //gets(stm);
 
-        cin >> str;
+    for (int i = 0; i < t; i++) {
+
+        getline(cin, line, '\n');
+
+        if(line.size() <= 2){
+            i --;
+            continue;
+        }
+
+        istringstream istr;
+        istr.str(line);
+
+        istr >> str;
+        sb[i].NAME(str);
+
+        istr >> str;
         sb[i].SEX(str);
 
-        cin >> tel_2;
+        istr >> str;
         sb[i].NUMBER(tel_2);
 
-        cin >> str;
+        istr >> str;
         sb[i].COLLEGE(str);
 
-        cin >> tel_2;
+        istr >> str;
         sb[i].TEL(tel_2);
     }
 
