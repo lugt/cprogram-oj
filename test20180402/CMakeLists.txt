@@ -3,4 +3,5 @@ project(test20180402)
 
 set(CMAKE_CXX_STANDARD 98)
 
-add_executable(test20180402 main.cpp Point.cpp Point.h)
+add_executable(test20180402
+        Point.cpp Point.h)

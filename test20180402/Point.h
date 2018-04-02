@@ -8,6 +8,7 @@
 
 #include<iostream>
 #include <iomanip>
+#include <cmath>
 
 using namespace std;
 class Point
@@ -24,6 +25,7 @@ public:
 
     double distanceToAnotherPoint(Point p);
 };
+
 Point::Point(double x_value, double y_value):x(x_value),y(y_value) {};
 Point::Point():x(0),y(0) {};
 void Point::setx(double x_value) {x = x_value;}
@@ -32,7 +34,7 @@ double Point::GetX() {return x;}
 double Point::GetY() {return y;}
 double Point::distanceToAnotherPoint(Point p2)
 {
-    return (x-p2.GetX())*(x-p2.GetX())+(y-p2.GetY())*(y-p2.GetY());
+    return sqrt((x-p2.GetX())*(x-p2.GetX())+(y-p2.GetY())*(y-p2.GetY()));
 }
 int main(void)
 {
@@ -43,13 +45,17 @@ int main(void)
     {
         double x_1 , y_1 , x_2 , y_2;
         double distance_value;
+        cin>> x_1 >> y_1 >> x_2 >> y_2 ;
+        sb1.setx(x_1);
+        sb1.sety(y_1);
+        sb2.setx(x_2);
+        sb2.sety(y_2);
         distance_value = sb1.distanceToAnotherPoint(sb2);
-    cin>> x_1 >> y_1 >> x_2 >> y_2 ;
-    cout<<"Distance of Point(" << sb1.GetX() << "," << sb1.GetY()<< ") "
-            << "to " << "Point(" << sb2.GetX()<< "," << sb2.GetY()<< ") " << "is "
-            <<fixed<<setprecision(2)
-            <<distance_value
-            <<endl;
+        cout << fixed << setprecision(2);
+        cout << "Distance of Point(" << sb1.GetX() << "," << sb1.GetY()<< ") "
+           << "to " << "Point(" << sb2.GetX()<< "," << sb2.GetY()<< ") " << "is "
+           <<distance_value
+           <<endl;
     }
     return 0;
 }
