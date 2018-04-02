@@ -15,61 +15,65 @@ using namespace std;
 
 
 class sysAccount {
-    int id;
-    int cell;
-    int dp;
-    int bal;
+
+private:
+    int id, cell, dp, bal;
+
 public:
-    void setid(int _id);
+    int getId() const;
 
-    void setcell(int _cell);
+    void setId(int id);
 
-    void setdp(int _dp);
+    int getCell() const;
 
-    void setbal(int _bal);
+    void setCell(int cell);
 
-    int getid();
+    int getDp() const;
 
-    int getcell();
+    void setDp(int dp);
 
-    int getdp();
+    int getBal() const;
 
-    int getbal();
-
+    void setBal(int bal);
 
 };
+
+int sysAccount::getId() const {
+    return id;
+}
+
+void sysAccount::setId(int id) {
+    sysAccount::id = id;
+}
+
+int sysAccount::getCell() const {
+    return cell;
+}
+
+void sysAccount::setCell(int cell) {
+    sysAccount::cell = cell;
+}
+
+int sysAccount::getDp() const {
+    return dp;
+}
+
+void sysAccount::setDp(int dp) {
+    sysAccount::dp = dp;
+}
+
+int sysAccount::getBal() const {
+    return bal;
+}
+
+void sysAccount::setBal(int bal) {
+    sysAccount::bal = bal;
+}
 
 void result(sysAccount *sb, sysAccount *ass, int n, int i, int k, int j, int flag);
 
 sysAccount *find_account_by_cell(sysAccount *account, int i, int i1);
 
-int sysAccount::getid() { return id; }
-
-int sysAccount::getcell() { return cell; }
-
-int sysAccount::getdp() { return dp; }
-
-int sysAccount::getbal() { return bal; }
-
-void sysAccount::setid(int _id) {
-    id = _id;
-
-}
-
-void sysAccount::setcell(int _cell) {
-    cell = _cell;
-
-}
-
-void sysAccount::setdp(int _dp) {
-    dp = _dp;
-
-}
-
-void sysAccount::setbal(int _bal) {
-    bal = _bal;
-
-}
 
 int main() {
     sysAccount * sb;
@@ -80,10 +84,10 @@ int main() {
     sb = new sysAccount[n]();
     for (i = 0; i < n; i++) {
         cin >> _id >> _cell >> _dp >> _bal;
-        sb[i].setid(_id);
-        sb[i].setcell(_cell);
-        sb[i].setdp(_dp);
-        sb[i].setbal(_bal);
+        sb[i].setId(_id);
+        sb[i].setCell(_cell);
+        sb[i].setDp(_dp);
+        sb[i].setBal(_bal);
     }
 
 
@@ -95,11 +99,11 @@ int main() {
             cout << "手机号不存在" << endl;
             continue;
         }
-        if (ptr->getdp() == _dp) {
-            if (ptr->getbal() >= _bal) {
-                cout << "卡号" << ptr->getid() << "--余额" << ptr->getbal() - _bal << endl;
+        if (ptr->getDp() == _dp) {
+            if (ptr->getBal() >= _bal) {
+                cout << "卡号" << ptr->getId() << "--余额" << ptr->getBal() - _bal << endl;
             } else {
-                cout << "卡号" << ptr->getid() << "--余额不足" << endl;
+                cout << "卡号" << ptr->getId() << "--余额不足" << endl;
             }
         } else {
             cout << "密码错误" << endl;
@@ -110,7 +114,7 @@ int main() {
 
 sysAccount *find_account_by_cell(sysAccount *account, int total, int cell) {
     for(int i = 0; i < total; i++){
-        if(account[i].getcell() == cell){
+        if(account[i].getCell() == cell){
             return &account[i];
         };
     }
