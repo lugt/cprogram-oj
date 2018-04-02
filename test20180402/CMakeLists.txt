@@ -4,4 +4,7 @@ project(test20180402)
 set(CMAKE_CXX_STANDARD 98)
 
 add_executable(test20180402
-        Point.cpp Point.h)
+        main.cpp)
+
+add_executable(ptr
+        cls_ptr.h cls_ptr.cpp)

@@ -103,7 +103,7 @@ void getPoint(Point * pt){
     pt->setY(y1);
 }
 
-int maixxxxn()
+int main()
 {
 
     int n, t;
