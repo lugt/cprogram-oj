@@ -3,6 +3,9 @@
 #include <vector>
 #include <list>
 using namespace  std;
+
+static int simple_year[] = {31,28,31,30,31,30,31,31,30,31,30,31};
+static int special_year[] = {31,28,31,30,31,30,31,31,30,31,30,31};
 class Date{
     int year, month, day;
 public:
@@ -14,6 +17,20 @@ public:
     void setDate(int y, int m, int d);
     void print();
     void addoneDay();
+    int daysInThisMonth(int year, int month){
+        if(isSpecialYear(year)){
+            return special_year[month - 1];
+        }else{
+            return simple_year[month - 1];
+        }
+    }
+    int isSpecialYear(int year){
+        if(year % 100 == 0){
+            return (year % 400 == 0);
+        }else return (year % 4 == 0);
+    }
+
+    void goNextMonth();
 };
 
 Date::Date()
@@ -49,16 +66,25 @@ void Date::setDate(int y, int m, int d)
 }
 void Date::print()
 {
-    cout<< year << "/" << month << "/" << day;
+    cout<< year << "/" << month << "/" << day << endl;
 }
 
 void Date::addoneDay()
 {
     day = day + 1;
-    //这里需要判断一下day;
-    //大小月、二月、润年这些
-    //如果day超出了当前month的日,day就为1,month就加1
-    //自己添加这里
+    if(daysInThisMonth(year, month) < day){
+        goNextMonth();
+        day = 1;
+    }
+}
+
+void Date::goNextMonth(){
+    if(month == 12){
+        year ++;
+        month = 1;
+    }else{
+        month ++;
+    }
 }
 
 int main()
@@ -68,8 +94,8 @@ int main()
     cin >> t;
     while(t -- ){
         cin >> yy >> mm >> dd;
-	Date date(yy, mm, dd);
-	cout<< "Today is:";
+    	Date date(yy, mm, dd);
+	    cout<< "Today is:";
         date.print();
         date.addoneDay();
         cout<< "Tomorrow is:";
