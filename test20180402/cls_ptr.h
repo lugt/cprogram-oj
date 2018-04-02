@@ -18,6 +18,10 @@ private:
 public:
     void NAME(string name_1) { name = name_1; }
 
+    void NAME(std::istream & cin_){
+        cin_ >> name;
+    }
+
     void SEX(string sex_1) { sex = sex_1; }
 
     long NUMBER(long number_1) { return number_1; }
@@ -55,10 +59,11 @@ int main(void) {
     long tel_2;
     sb = new Student[t];
 
+
+
     for (int i = 0; i < t; i++) {
         string str;
-        cin >> str;
-        sb[i].NAME(str);
+        sb[i].NAME(cin);
 
         cin >> str;
         sb[i].SEX(str);
