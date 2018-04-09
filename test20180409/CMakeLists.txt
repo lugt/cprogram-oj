@@ -3,9 +3,8 @@ project(test20180409)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(test20180409 main.cpp)
+add_executable(complex complexnum.cpp)
 
 add_executable(dates date.cpp)
 
 add_executable(tel tel.cpp)
-add_executable(ccc ccc.cpp)
