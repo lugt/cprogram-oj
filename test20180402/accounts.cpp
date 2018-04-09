@@ -1,109 +1,54 @@
 #include <iostream>
-#include <string>
-#include <vector>
-#include <list>
-#include <iomanip>
-#include <cmath>
-#include <algorithm>
 #include <sstream>
-#include <string>
-#include <map>
 
-#define PI 3.1415926
-#define inf 0.001
 using namespace std;
-
-
-class sysAccount {
+class CAccount {
 
 private:
-    int id, cell, dp, bal;
-
+    int bianhao, shouji, dp, yuee;
 public:
-    int getId() const;
-
-    void setId(int id);
-
-    int getCell() const;
-
-    void setCell(int cell);
-
-    int getDp() const;
-
-    void setDp(int dp);
-
-    int getBal() const;
-
-    void setBal(int bal);
-
+    int get_num() const;    void setId(int id);
+    int getshouji() const;    void setCell(int cell);
+    int dpp() const;    void dpe(int dp);
+    int getBal() const;    void setBal(int bal);
 };
 
-int sysAccount::getId() const {
-    return id;
-}
 
-void sysAccount::setId(int id) {
-    sysAccount::id = id;
-}
+void result(CAccount *sb, CAccount *apm, int n, int i, int k, int j, int q);
 
-int sysAccount::getCell() const {
-    return cell;
-}
-
-void sysAccount::setCell(int cell) {
-    sysAccount::cell = cell;
-}
-
-int sysAccount::getDp() const {
-    return dp;
-}
-
-void sysAccount::setDp(int dp) {
-    sysAccount::dp = dp;
-}
-
-int sysAccount::getBal() const {
-    return bal;
-}
-
-void sysAccount::setBal(int bal) {
-    sysAccount::bal = bal;
-}
-
-void result(sysAccount *sb, sysAccount *ass, int n, int i, int k, int j, int flag);
-
-sysAccount *find_account_by_cell(sysAccount *account, int i, int i1);
+CAccount *chazhao(CAccount *zhanghushuzu, int i, int shoujill);
 
 
 int main() {
-    sysAccount * sb;
-    int _id, _cell, _dp, _bal, n, k, i;
+    CAccount * zhanghu;
+    int zhanghuhaoma, shoujihaoma, _dp, yuee, s, t, r;
 
-    cin >> n;
+    cin >> s;
 
-    sb = new sysAccount[n]();
-    for (i = 0; i < n; i++) {
-        cin >> _id >> _cell >> _dp >> _bal;
-        sb[i].setId(_id);
-        sb[i].setCell(_cell);
-        sb[i].setDp(_dp);
-        sb[i].setBal(_bal);
+    zhanghu = new CAccount[s]();
+    for (r = 0; r < s; r++) {
+        cin >> zhanghuhaoma >> shoujihaoma >> _dp >> yuee;
+        zhanghu[r].setId(zhanghuhaoma);
+        zhanghu[r].setCell(shoujihaoma);
+        zhanghu[r].dpe(_dp);
+        zhanghu[r].setBal(yuee);
     }
 
-
-    cin >> k;
-    for (i = 0; i < k; i++) {
-        cin >> _cell >> _dp >> _bal;
-        sysAccount *ptr = find_account_by_cell(sb, n, _cell);
-        if(ptr == NULL){
+    cin >> t;
+    for (r = 0; r < t; r++) {
+        cin >> shoujihaoma;
+        cin >> _dp;
+        cin >> yuee;
+        CAccount *zhizhen = chazhao(zhanghu, s, shoujihaoma);
+        if(zhizhen == NULL){
             cout << "手机号不存在" << endl;
             continue;
         }
-        if (ptr->getDp() == _dp) {
-            if (ptr->getBal() >= _bal) {
-                cout << "卡号" << ptr->getId() << "--余额" << ptr->getBal() - _bal << endl;
+        if (zhizhen->dpp() == _dp) {
+            if (zhizhen->getBal() >= yuee) {
+                cout << "卡号" << zhizhen->get_num() << "--余额" << zhizhen->getBal() - yuee << endl;
             } else {
-                cout << "卡号" << ptr->getId() << "--余额不足" << endl;
+                cout << "卡号" << zhizhen->get_num() << "--余额不足" << endl;
             }
         } else {
             cout << "密码错误" << endl;
@@ -112,11 +57,45 @@ int main() {
     return 0;
 }
 
-sysAccount *find_account_by_cell(sysAccount *account, int total, int cell) {
+CAccount *chazhao(CAccount *zhanghushuzu, int total, int shoujill) {
     for(int i = 0; i < total; i++){
-        if(account[i].getCell() == cell){
-            return &account[i];
+        if(zhanghushuzu[i].getshouji() == shoujill){
+            return &zhanghushuzu[i];
         };
     }
     return NULL;
+}
+
+
+
+int CAccount::get_num() const {
+    return bianhao;
+}
+
+void CAccount::setId(int id) {
+    CAccount::bianhao = id;
+}
+
+int CAccount::getshouji() const {
+    return shouji;
+}
+
+void CAccount::setCell(int cell) {
+    CAccount::shouji = cell;
+}
+
+int CAccount::dpp() const {
+    return dp;
+}
+
+void CAccount::dpe(int dp) {
+    CAccount::dp = dp;
+}
+
+int CAccount::getBal() const {
+    return yuee;
+}
+
+void CAccount::setBal(int bal) {
+    CAccount::yuee = bal;
 }

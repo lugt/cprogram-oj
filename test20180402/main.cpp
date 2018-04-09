@@ -14,11 +14,11 @@
 using namespace std;
 
 
-class sysAccount {
-    int id;
-    int cell;
+class CAccount {
+    int bianhao;
+    int shouji;
     int dp;
-    int bal;
+    int yuee;
 public:
     void setid(int _id);
 
@@ -39,45 +39,45 @@ public:
 
 };
 
-void result(sysAccount *sb, sysAccount *ass, int n, int i, int k, int j, int flag);
+void result(CAccount *sb, CAccount *apm, int n, int i, int k, int j, int q);
 
-sysAccount *find_account_by_cell(sysAccount *account, int i, int i1);
+CAccount *chazhao(CAccount *zhanghushuzu, int i, int shoujill);
 
-int sysAccount::getid() { return id; }
+int CAccount::getid() { return bianhao; }
 
-int sysAccount::getcell() { return cell; }
+int CAccount::getcell() { return shouji; }
 
-int sysAccount::getdp() { return dp; }
+int CAccount::getdp() { return dp; }
 
-int sysAccount::getbal() { return bal; }
+int CAccount::getbal() { return yuee; }
 
-void sysAccount::setid(int _id) {
-    id = _id;
-
-}
-
-void sysAccount::setcell(int _cell) {
-    cell = _cell;
+void CAccount::setid(int _id) {
+    bianhao = _id;
 
 }
 
-void sysAccount::setdp(int _dp) {
+void CAccount::setcell(int _cell) {
+    shouji = _cell;
+
+}
+
+void CAccount::setdp(int _dp) {
     dp = _dp;
 
 }
 
-void sysAccount::setbal(int _bal) {
-    bal = _bal;
+void CAccount::setbal(int _bal) {
+    yuee = _bal;
 
 }
 
 int main() {
-    sysAccount * sb;
+    CAccount * sb;
     int _id, _cell, _dp, _bal, n, k, i;
 
     cin >> n;
 
-    sb = new sysAccount[n]();
+    sb = new CAccount[n]();
     for (i = 0; i < n; i++) {
         cin >> _id >> _cell >> _dp >> _bal;
         sb[i].setid(_id);
@@ -90,7 +90,7 @@ int main() {
     cin >> k;
     for (i = 0; i < k; i++) {
         cin >> _cell >> _dp >> _bal;
-        sysAccount *ptr = find_account_by_cell(sb, n, _cell);
+        CAccount *ptr = chazhao(sb, n, _cell);
         if(ptr == NULL){
             cout << "手机号不存在" << endl;
             continue;
@@ -108,7 +108,7 @@ int main() {
     return 0;
 }
 
-sysAccount *find_account_by_cell(sysAccount *account, int total, int cell) {
+CAccount *chazhao(CAccount *account, int total, int cell) {
     for(int i = 0; i < total; i++){
         if(account[i].getcell() == cell){
             return &account[i];
