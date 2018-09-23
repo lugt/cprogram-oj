@@ -36,6 +36,9 @@ double Point::distanceToAnotherPoint(Point p2)
 {
     return sqrt((x-p2.GetX())*(x-p2.GetX())+(y-p2.GetY())*(y-p2.GetY()));
 }
+
+
+
 int main(void)
 {
     Point sb1,sb2;
