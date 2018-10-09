@@ -78,12 +78,13 @@ int main(INT argc, CHPPTR argv) {
     INT             length   = 0;
     STRING          input_str;
     STRING          outbnd_str;
-    STLSTK          my, out;
+    STLSTK         *my, out;
     while(std::cin  >>  n) {
         std::cin      >>       input_str;
         std::cin      >>     outbnd_str;
         UINT64        len      = input_str.size();
-        if(Str_Sequence_Check (&my, input_str.c_str(), len, outbnd_str.c_str()) >= 0){
+        my                     = new STLSTK();
+        if(Str_Sequence_Check (my, input_str.c_str(), len, outbnd_str.c_str()) >= 0){
             std::cout    << "Yes." << "\n";
             std::cout    << outstr;
             std::cout    << "FINISH" << "\n";
