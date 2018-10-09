@@ -53,7 +53,7 @@ const vector<int> * kmp_next(string &m)
     return &next;
 }
 
-bool kmp_search(string text,string m,int &pos)
+bool Kmp_search(string text, string m, int &pos)
 {
     const vector<int> * next=kmp_next(m);
     int tp=0;
@@ -77,7 +77,7 @@ bool kmp_search(string text,string m,int &pos)
 int main()
 {
     int pos=0;
-    kmp_search("abcacbc","ca",pos);
+    Kmp_search("abcacbc", "ca", pos);
     cout<<"position = "<<pos+1<<endl;
     return 0;
 }

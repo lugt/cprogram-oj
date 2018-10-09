@@ -2,11 +2,9 @@
 // Created by lugt on 2018/10/9.
 //
 
-#include "testfun.h"
 #include <iostream>
 #include <intrin.h>
 #include <time.h>
-#include "global_tmpl.h"
 
 #define dataLen  1000000000
 
@@ -78,6 +76,6 @@ void testfun()
 
 }
 
-void main(int, char**){
+int main(int, char**){
     testfun();
 }
