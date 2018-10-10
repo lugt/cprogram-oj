@@ -37,7 +37,7 @@ typedef const char*            CCHPTR;
 typedef const char**           CCHPPTR;
 
 inline BOOL Echo(){
-    return false;
+    return true;
 }
 
 /***
@@ -100,32 +100,46 @@ INT main()
 
         if(inputstr.empty()) continue;
 
+        inputstr += "$";
+
         Is_Echo(("Input:%s\n", inputstr.c_str()));
 
         INT      lastoccur = -1;
+        UINT     len       = 0;
+        INT      max = 0;
+        UINT     max_pos = 0;
+        string   max_str;
         UINT     suflen    = inputstr.size();
         CCHPTR   suffix    = inputstr.c_str();
         CCHPTR   cursor;
 
 
-        for(INT i = suflen - 1; i >= 1 ; i--){
-            cursor = suffix + i;
-            if(suflen - i > 0
-            && cursor + suflen - i - 1 <= suffix + suflen
-            && cursor                  <  suffix + suflen
-            && cursor                  >= suffix) {
-                //CCHPTR once = KMP_search(inputstr, cursor, suflen - i, pos);
-                CCHPTR once = strstr(suffix, cursor); // glibc is faster
-                if(once != NULL && once == suffix){
-                    lastoccur = i;
+        for(INT i = 0; i < suflen ; i++){
+            cursor = i + suffix;
+            len = suflen - i;
+            const INTVEC *next_arr = KMP_next(cursor, len);
+            Is_Echo(("%s,","next-arr:"));
+            for(UINT j = 0; j < len; j++){
+                Is_Echo(("%d,", next_arr->at(j)));
+            }
+            Is_Echo(("%s,","\n"));
+            for(UINT j = 0; j < len; j++){
+                if(next_arr->at(j) >= max && next_arr->at(j) <= (len-1) / 2){
+                    max_pos = i + j;
+                    max = next_arr->at(j);
+                    if(max != 0) max_str = inputstr.substr(i, max);
                 }
             }
+            Is_Echo(("str:%s, max: %d, max_pos(fixed):%d \n", cursor, max, max_pos));
         }
 
-        if(lastoccur == -1){
-            cout << "empty" << endl;
+        if(max == 0){
+            cout << "-1" << endl;
         }else {
-            cout << inputstr.substr(static_cast<unsigned long>(lastoccur)) << endl;
+            Is_Echo(("max_str:%s, inputstr:%s, len: %d, max_pos:%d, start_pos = %d\n",max_str.c_str(), inputstr.c_str(), max, max_pos, max_pos - max));
+            string out = inputstr.substr(max_pos - max, max);
+            Is_Echo(("out_str:%s,",out.c_str()));
+            cout << max << endl;
         }
     }
     return 0;
