@@ -5,4 +5,4 @@ set(CMAKE_CXX_STANDARD 98)
 
 add_executable(huffman huffman_encode.cpp)
 add_executable(path_integrate path_intergrate.cpp)
-add_executable(bitree bitree.cpp)
+add_executable(basictree path_difference.cpp)
