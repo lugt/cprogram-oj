@@ -412,21 +412,13 @@ public:
   }
 
   BOOL Is_left(T i) {
-    Go_left();
-    if(Get_val() == i){
-      Go_up();
-      return TRUE;
-    }
-    return FALSE;
+    if(_node->_lhs == NULLPTR) return i == 0;
+    return _node->_lhs->_data == i;
   }
 
   BOOL Is_right(T i) {
-    Go_right();
-    if(Get_val() == i){
-      Go_up();
-      return TRUE;
-    }
-    return FALSE;
+    if(_node->_rhs == NULLPTR) return i == 0;
+    return _node->_rhs->_data == i;
   }
 
   BOOL Is_Root() {
@@ -532,41 +524,32 @@ INT main() {
   for (UINT i = 0; i < trials; i++) {
     chartree.clear();
     cin >> all_data;
-
-    it->Goto_pos(j+1);
-    it->Set_val(num);
-    Is_Print(Printing(), (" -- Adding %d --\n", num));
-
     it->Goto_pos(1);
     while(TRUE){
       if(all_data.size() <= i) break;
       num = all_data[i];
-      if(it->Get_val() != '+'){
-        if(it->Is_left(0)){
-          // can go
-          it->Go_left();
-          it->Set_val(num);
-          if(num == '0'){
-            it->Go_up();
-          }
-          i++;
-        }else if(it->Is_right(0)){
-          // can go
-          it->Go_right();
-          it->Set_val(num);
-          if(num == '0'){
-            it->Go_up();
-          }
-          i++;
-        }else{
-          if(it->Is_Root()){
-            break; // Failed
-          }else{
-            it->Go_up();
-          }
+      if(it->Is_left(0)){
+        // can go
+        it->Go_left();
+        it->Set_val(num);
+        if(num == '0'){
+          it->Go_up();
         }
+        i++;
+      }else if(it->Is_right(0)){
+        // can go
+        it->Go_right();
+        it->Set_val(num);
+        if(num == '0'){
+          it->Go_up();
+        }
+        i++;
       }else{
-
+        if(it->Is_Root()){
+          break; // Failed
+        }else{
+          it->Go_up();
+        }
       }
     }
 
@@ -584,14 +567,7 @@ INT main() {
 }
 
 /**
-     * 样例输入
-3
-3 1 2 3
-5 1 2 3 0 4
-13 1 2 3 4 0 5 6 7 8 0 0 9 10
-样例输出
-1 2 3
-1 2 4 3
-1 2 4 7 8 3 5 9 10 6
-     * */
-//.push(type);
+
+
+
+**/
