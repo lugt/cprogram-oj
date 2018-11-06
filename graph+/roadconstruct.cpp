@@ -86,7 +86,7 @@ INT Get_connected(INT *conn, INT size, INT lval, INT rval){
 void Print_conn(INT *conn, INT size){
   for(UINT i = 0; i < size;  i++){
     for (UINT j = 0; j < size ; j++){
-      cout << Is_connected(conn, size, i, j) << ((j == size - 1) ?("\n"):(" "));
+      cout << Get_connected(conn, size, i, j) << ((j == size - 1) ?("\n"):(" "));
     }
     //cout << endl;
   }
@@ -232,24 +232,17 @@ struct simpleCompareLess{
 } customLess;
 
 
-void one_trial(){
-  INT         vex_count  = 0,
-    edge_count = 0,
-    lhs        = 0,
-    rhs        = 0;
-
-  cin         >> vex_count;
-
-  CHPTR     *all_nodes = new CHPTR[vex_count];
+void one_trial(INT vex_count){
+  INT         edge_count = 0,
+              lhs        = 0,
+              rhs        = 0;
   INT        *conn      = New_connections(vex_count);
-
-
-  LISTVEC    &vex_pos = *new LISTVEC(vex_count);
-  for(UINT i = 0; i < vex_count; i++){
-    CHPTR     node_name = new CHAR[1000];
-    cin       >> node_name;
-    all_nodes[i] = node_name;
-    add_vex_pos(vex_pos, node_name, i);
+  for(UINT i = 0; i < vex_count ; i++){
+    for(UINT j = 0; j < vex_count ; j++){
+      INT is_on = 0;
+      cin >> is_on;
+      Set_connections(conn, vex_count, i, j, is_on);
+    }
   }
 
   std::vector<Tuple *> edges;
@@ -259,26 +252,27 @@ void one_trial(){
   INT                 *kruskal_set   = new INT[vex_count];
   INT                 *prim_set      = new INT[vex_count];
 
-  INT weight;
-  cin >> edge_count;
-  for(UINT i = 0; i < edge_count; i++){
-    CHPTR     node_name = new CHAR[1000];
-    cin       >> node_name;
-    lhs       =  get_vex_pos(vex_pos, node_name);
-    node_name = new CHAR[1000];
-    cin       >> node_name >> weight;
-    rhs       =  get_vex_pos(vex_pos, node_name);
-    Set_connections(conn, vex_count, lhs, rhs, weight);
-    Set_connections(conn, vex_count, rhs, lhs, weight);
-    Tuple  *p = new Tuple(lhs, rhs, weight);
-    edges.push_back(p);
+  INT finish_count = 0;
+  cin              >> finish_count;
+  for(UINT i = 0; i < finish_count ; i++){
+    INT lhs, rhs;
+    cin >> lhs >> rhs;
+    lhs --;
+    rhs --;
+    Set_connections(conn, vex_count, lhs, rhs, 0);
+    Set_connections(conn, vex_count, rhs, lhs, 0);
+  }
+
+  for(UINT lhs = 0; lhs < vex_count; lhs++){
+    for(UINT rhs = 0; rhs < lhs; rhs++) {
+      Tuple *p = new Tuple(lhs, rhs, Get_connected(conn, vex_count, lhs, rhs));
+      edges.push_back(p);
+    }
   }
 
   if(Echo()) Print_conn(conn, vex_count);
 
-  CHPTR node_name = new CHAR[1000];
-  cin >> node_name;
-  INT startv = get_vex_pos(vex_pos, node_name);
+  INT startv = 0;
 
 
   //=====================================================
@@ -401,26 +395,30 @@ void one_trial(){
 
   cout << kruskal_count << endl;
 
-  cout << "prim:" << endl;
-  for(UINT i = 0; i < prim_edges.size(); i++){
-    cout << vex_pos.Get_Name(prim_edges.at(i)->left)  << " "
-         << vex_pos.Get_Name(prim_edges.at(i)->right) << " "
-         << prim_edges.at(i)->weight << endl;
-  }
-  cout << "kruskal:" << endl;
-  for(UINT i = 0; i < kruskal_edges.size(); i++){
-    cout << vex_pos.Get_Name(kruskal_edges.at(i)->left)  << " "
-         << vex_pos.Get_Name(kruskal_edges.at(i)->right) << " "
-         << kruskal_edges.at(i)->weight << endl;
-  }
+  if(Echo()){
+    cout << "prim:" << endl;
+    for (UINT i = 0; i < prim_edges.size(); i++) {
+      cout << prim_edges.at(i)->left << " "
+           << prim_edges.at(i)->right << " "
+           << prim_edges.at(i)->weight << endl;
+    }
+    cout << "kruskal:" << endl;
+    for (UINT i = 0; i < kruskal_edges.size(); i++) {
+      cout << kruskal_edges.at(i)->left << " "
+           << kruskal_edges.at(i)->right << " "
+           << kruskal_edges.at(i)->weight << endl;
+    }
+   }
 }
 
 
 INT main(){
   INT trials = 0;
   //cin >> trials;
-  //while(trials--) one_trial();
-  one_trial();
+  INT n;
+  while(cin >> n) {
+    one_trial(n);
+  }
   getchar();
   getchar();
   getchar();

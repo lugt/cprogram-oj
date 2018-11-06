@@ -225,7 +225,7 @@ public:
 };
 
 struct simpleCompareLess{
-  bool operator()(Tuple * const& a, Tuple * const& b) const
+  bool operator()(Tuple * const &a, Tuple * const &b) const
   {
     return a->weight < b->weight;
   }
@@ -409,9 +409,15 @@ void one_trial(){
   }
   cout << "kruskal:" << endl;
   for(UINT i = 0; i < kruskal_edges.size(); i++){
-    cout << vex_pos.Get_Name(kruskal_edges.at(i)->left)  << " "
-         << vex_pos.Get_Name(kruskal_edges.at(i)->right) << " "
-         << kruskal_edges.at(i)->weight << endl;
+    if(kruskal_edges.at(i)->left <= kruskal_edges.at(i)->right) {
+      cout << vex_pos.Get_Name(kruskal_edges.at(i)->left) << " "
+           << vex_pos.Get_Name(kruskal_edges.at(i)->right) << " "
+           << kruskal_edges.at(i)->weight << endl;
+    }else{
+      cout << vex_pos.Get_Name(kruskal_edges.at(i)->right) << " "
+           << vex_pos.Get_Name(kruskal_edges.at(i)->left) << " "
+           << kruskal_edges.at(i)->weight << endl;
+    }
   }
 }
 
