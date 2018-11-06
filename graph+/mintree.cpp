@@ -52,7 +52,7 @@ inline BOOL Echo(){
 }
 
 inline BOOL EchoKrusKal(){
-  return FALSE && Echo();
+  return FALSE;
 }
 
 
@@ -90,26 +90,6 @@ void Print_conn(INT *conn, INT size){
     }
     //cout << endl;
   }
-}
-
-UINT Count_column(INT *conn, INT size, INT col){
-  UINT count = 0;
-  for(UINT i = 0; i < size;  i++){
-    if(Is_connected(conn, size, i, col)){
-      count ++;
-    }
-  }
-  return count;
-}
-
-UINT Count_line(INT *conn, INT size, INT line){
-  UINT count = 0;
-  for(UINT i = 0; i < size;  i++){
-    if(Is_connected(conn, size, line, i)){
-      count ++;
-    }
-  }
-  return count;
 }
 
 class LISTVEC{
@@ -152,63 +132,6 @@ INT get_vex_pos(LISTVEC &ve, CHPTR name){
   }
   Is_True(FALSE, ("Cannot locate for node <%s> \n", name));
   return -1;
-}
-
-INT Get_one_unvisited(INT *node_previous, INT *node, INT size, INT pos){
-  for(UINT i = 0; i < size ; i++){
-    BOOL out = Is_connected(node, size, pos, i);
-    if(out == TRUE && node_previous[i] == 0){
-      Is_Echo(Echo(), ("[Get_one_unvisited] Unvisited pos<%d> \n", i));
-      return i;
-    }
-  }
-  return -1;
-}
-
-void Visit_Node_DFS(INT *node_previous, INT *node, INT size, INT pos){
-  Is_Echo(Echo(), ("Visiting pos<%d> \n", pos));
-  node_previous[pos] = 1;
-  // Do something here.
-  cout << pos << " "; // cou
-  INT tobe = Get_one_unvisited(node_previous, node, size, pos);
-  while(tobe != -1){
-    Is_Echo(Echo(), ("Whiling tobe<%d> \n", tobe));
-    Visit_Node_DFS(node_previous, node, size, tobe);
-    tobe = Get_one_unvisited(node_previous, node, size, pos);
-  }
-}
-
-void Traverse_DFS(INT *node, INT size){
-  INT *empty = new INT[size];
-  while(Get_first_unvisited(empty, size) != -1){
-    Visit_Node_DFS(empty, node, size, Get_first_unvisited(empty, size));
-  }
-}
-
-INT Get_first_unvisited(INT *pInt, INT size) {
-  for(UINT i = 0; i < size; i++){
-    if(pInt[i] == 0){
-      return i;
-    }
-  }
-  return -1;
-}
-
-void one_trial_dfs(){
-  INT         vex_count  = 0, is_on = 0;
-  cin         >> vex_count;
-  INT        *conn      = New_connections(vex_count);
-
-  for(UINT i = 0; i < vex_count ; i++){
-    for(UINT j = 0; j < vex_count ; j++){
-        cin >> is_on;
-        Set_connections(conn, vex_count, i, j, (is_on != 0));
-    }
-  }
-
-  if(Echo()) Print_conn(conn, vex_count);
-  Traverse_DFS(conn, vex_count);
-  cout << endl;
 }
 
 class Tuple{
@@ -256,8 +179,10 @@ void one_trial(){
   std::vector<Tuple *> kruskal_edges;
   std::vector<Tuple *> prim_edges;
   std::vector<Tuple *> prim_work;
-  INT                 *kruskal_set   = new INT[vex_count];
-  INT                 *prim_set      = new INT[vex_count];
+  INT                 *kruskal_parent   = new INT[vex_count];
+  INT                 *kruskal_kid      = new INT[vex_count];
+  INT                 *kruskal_root     = new INT[vex_count];
+  INT                 *prim_set         = new INT[vex_count];
 
   INT weight;
   cin >> edge_count;
@@ -359,41 +284,82 @@ void one_trial(){
   //=====================================================
   std::sort(edges.begin(), edges.end(), customLess);
 
-  memset(kruskal_set, 0, sizeof(INT) * vex_count);
+  memset(kruskal_parent, 0, sizeof(INT) * vex_count);
+  for(UINT i = 0; i < vex_count; i ++){
+    kruskal_parent[i] = -1;
+    kruskal_root[i] = -1;
+    kruskal_kid[i] = -1;
+  }
   INT kruskal_count = 0;
-  INT max_circle = 100;
+  Is_Echo(EchoKrusKal(), ("\"=================================\"\n"));
+  Is_Echo(EchoKrusKal(), (" Kruskal \n"));
+  Is_Echo(EchoKrusKal(), ("\"=================================\"\n"));
   for(INT i = 0; i < edges.size(); i++){
     // Traverse Edges and find the unconnected, set to connected;
     INT left = edges.at(i)->left;
     INT right = edges.at(i)->right;
-    if(kruskal_set[left] > 0 && kruskal_set[right] == kruskal_set[left]) {
+    if(kruskal_root[left] >= 0 && kruskal_root[right] == kruskal_root[left]) {
       Is_Echo(EchoKrusKal(), ("skipping left<%d>  right<%d> \n", left, right));
       continue;
-    }else if(kruskal_set[left] > 0 && kruskal_set[right] > 0){
-      Is_Echo(EchoKrusKal(), ("two circle combine left<%d>  right<%d> circle<%d,%d> \n", left, right, kruskal_set[left], kruskal_set[right]));
-      INT a = kruskal_set[left];
-      INT b = kruskal_set[right];
-      INT min = std::min(kruskal_set[left], kruskal_set[right]);
-      for(UINT j = 0; j < vex_count ; j++){
-        if(kruskal_set[j] == a || kruskal_set[j] == b) {
-          Is_Echo(EchoKrusKal(), ("bingding node<%d>  => circle<%d => %d> \n", j, kruskal_set[j], min));
-          kruskal_set[j] = min;
-        }
+    }else if(kruskal_root[left] >= 0 && kruskal_root[right] >= 0){
+      Is_Echo(EchoKrusKal(), ("two circle combine left<%d>  right<%d>  parents<%d,%d> roots<%d, %d>\n",
+        left, right, kruskal_parent[left], kruskal_parent[right], kruskal_root[left], kruskal_root[right]));
+      INT top_of_stack = left;
+      INT tochange = right;
+      INT root_to_be = std::min(kruskal_root[left], kruskal_root[right]);
+      if(root_to_be == kruskal_root[right]){
+        top_of_stack = right;
+        tochange = left;
+      }
+
+      while(kruskal_kid[top_of_stack] != -1){
+        top_of_stack = kruskal_kid[top_of_stack];
+      }
+
+      while(kruskal_parent[tochange] != -1){
+        tochange = kruskal_parent[tochange];
+      }
+
+      while(tochange >= 0) {
+        INT kid = kruskal_kid[tochange];
+        Is_Echo(EchoKrusKal(), ("bingding node<%d> => before: parent<%d>, kid<%d> root->%d \n", tochange, kruskal_parent[tochange], kruskal_kid[tochange], kruskal_root[tochange]));
+        kruskal_root[tochange]    = root_to_be;
+        kruskal_parent[tochange]  = top_of_stack;
+        kruskal_kid[top_of_stack] = tochange;
+        kruskal_kid[tochange]     = -1;
+        Is_Echo(EchoKrusKal(), ("bingding node<%d> => now: parent<%d>, kid<%d> root->%d \n", tochange, kruskal_parent[tochange], kruskal_kid[tochange], kruskal_root[tochange]));
+        top_of_stack = tochange;
+        tochange = kid;
       }
       kruskal_edges.push_back(edges.at(i));
       kruskal_count += edges.at(i)->weight;
-    }else if(kruskal_set[left] > 0 || kruskal_set[right] > 0) {
-      INT max = std::max(kruskal_set[left], kruskal_set[right]);
-      Is_Echo(EchoKrusKal(), ("connecting-new-dot left<%d>  right<%d> into circle<%d> \n", left, right, max));
-      kruskal_set[left] = max;
-      kruskal_set[right] = max;
+
+    }else if(kruskal_root[left] >= 0 || kruskal_root[right] >= 0) {
+      if(kruskal_root[left] >= 0){
+        Is_Echo(EchoKrusKal(), ("connecting-new-dot r<%d> child of l<%d> \n", right, left));
+        kruskal_root[right] = kruskal_root[left];
+        kruskal_parent[right] = left;
+        kruskal_kid[left] = right;
+      }else{
+        Is_Echo(EchoKrusKal(), ("connecting-new-dot l<%d>  child of r<%d> \n", left, right));
+        kruskal_root[left] = kruskal_root[right];
+        kruskal_parent[left] = right;
+        kruskal_kid[right] = left;
+      }
       kruskal_edges.push_back(edges.at(i));
       kruskal_count += edges.at(i)->weight;
     }else{
-      Is_Echo(EchoKrusKal(), ("new-circle left<%d>  right<%d> circle<%d> \n", left, right, max_circle));
-      kruskal_set[left] = max_circle;
-      kruskal_set[right] = max_circle;
-      max_circle++;
+      INT min = std::min(left, right);
+      Is_Echo(EchoKrusKal(), ("new-circle left<%d>  right<%d>  root<%d> \n", left, right, min));
+      kruskal_root[left] = min;
+      kruskal_root[right] = min;
+      if(min == left){
+        kruskal_parent[right] = left;
+        kruskal_kid[left] = right;
+      }else{
+        kruskal_parent[left] = right;
+        kruskal_kid[right] = left;
+      }
       kruskal_edges.push_back(edges.at(i));
       kruskal_count += edges.at(i)->weight;
     }
@@ -463,5 +429,24 @@ v4 v6 2
 v2 v5 3
 v3 v6 4
 v2 v3 5
+
+ */
+
+
+/**
+
+ 7
+0 1 2 3 4 5 6
+9
+0 1 28
+0 5 10
+1 2 16
+3 2 12
+3 6 18
+4 6 24
+4 5 25
+3 4 22
+1 6 14
+6
 
  */
