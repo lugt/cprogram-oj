@@ -86,7 +86,7 @@ INT Get_connected(INT *conn, INT size, INT lval, INT rval){
 void Print_conn(INT *conn, INT size){
   for(UINT i = 0; i < size;  i++){
     for (UINT j = 0; j < size ; j++){
-      cout << Is_connected(conn, size, i, j) << ((j == size - 1) ?("\n"):(" "));
+      cout << Get_connected(conn, size, i, j) << ((j == size - 1) ?("\n"):(" "));
     }
     //cout << endl;
   }

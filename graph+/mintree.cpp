@@ -213,7 +213,7 @@ void one_trial(){
   INT prim_count = 0;
   INT prim_shortest_len = 0;
   INT prim_shortest_edge = 0;
-  INT prim_unsolved = 0;
+  INT prim_unsolved = startv;
   std::vector<Tuple *> temp(edges);
   INT prim_shortest_target = 0;
 
