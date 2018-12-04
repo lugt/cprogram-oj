@@ -1,0 +1,259 @@
+//
+// Created by lugt on 2018/11/6.
+//
+
+// Kruskal
+
+// Prim
+
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+#include <map>
+#include <math.h>
+
+// STL Includings
+using std::cout;
+using std::cin;
+using std::cout;
+using std::cin;
+using std::endl;
+
+#define Is_Echo(cond, parm) if(cond) printf parm;
+#define Is_True(cond, parm) /*if(!(cond)) {printf parm; getchar(); getchar(); getchar(); exit(1);}*/
+
+typedef int                    INT;
+typedef unsigned int           UINT;
+typedef long long int          INT64;
+typedef bool                   BOOL;
+typedef long long unsigned int UINT64;
+typedef double                 F8;
+typedef char                   CHAR;
+typedef char*                  CHPTR;
+typedef char**                 CHPPTR;
+typedef const char*            CCHPTR;
+typedef const char**           CCHPPTR;
+
+/*printf parm; getchar(); getchar(); getchar(); exit(1);*/
+#define Get_some_thing memset
+#define Put_some_thing strcmp
+#define INTPTR extern
+#define NULLPTR NULL
+#define FALSE ((BOOL) 0)
+#define TRUE  ((BOOL) 1)
+
+INTPTR "C" {
+INTPTR void *Get_some_thing(void *b, int c, size_t len);
+INTPTR int Put_some_thing(const char *s1, const char *s2);
+}
+
+INT         max_d      = 0;  //max distance
+
+inline BOOL Echo(){
+  return FALSE;
+}
+
+inline BOOL EchoKrusKal(){
+  return FALSE;
+}
+
+
+INT *New_connections(INT vex_count){
+  INT *ptr   = new INT[vex_count * vex_count];
+  memset(ptr, 0, vex_count * vex_count);
+  return ptr;
+}
+
+
+INT *Conn_position(INT *conn, INT size, INT lval, INT rval){
+  Is_True((size > lval && size > rval), ("[Conn_pos] size<%d> smaller than lval<%d> rval<%d>\n",
+    size, lval, rval));
+  return &conn[lval * size + rval];
+}
+
+void Set_connections(INT *conn, INT size, INT lval, INT rval, INT is_connect){
+  (*Conn_position(conn,size,lval,rval)) = is_connect;
+}
+
+
+BOOL Is_connected(INT *conn, INT size, INT lval, INT rval){
+  return (*Conn_position(conn,size,lval,rval)) != 0;
+}
+
+INT Get_connected(INT *conn, INT size, INT lval, INT rval){
+  return (*Conn_position(conn,size,lval,rval));
+}
+
+
+void Print_conn(INT *conn, INT size){
+  for(UINT i = 0; i < size;  i++){
+    for (UINT j = 0; j < size ; j++){
+      cout << Is_connected(conn, size, i, j) << ((j == size - 1) ?("\n"):(" "));
+    }
+    //cout << endl;
+  }
+}
+
+class Tuple{
+public:
+  INT left;
+  INT right;
+  INT weight;
+public:
+  Tuple(int l, int r, int w){
+    left = l;
+    right = r;
+    weight = w;
+  }
+};
+
+struct simpleCompareLess{
+  bool operator()(Tuple * const &a, Tuple * const &b) const
+  {
+    return a->weight < b->weight;
+  }
+} customLess;
+
+class Node{
+public:
+  INT x;
+  INT y;
+  INT computerNo;
+  Node(int n, int x_, int y_){
+    computerNo = n;
+    x = x_;
+    y = y_;
+  }
+};
+
+typedef std::vector<Node *> NGroup;
+typedef std::vector<NGroup> NNet;
+
+double calc_distance(Node *a, Node*b){
+  return sqrt(pow(a->x - b->x, 2) + pow(a->y - b->y, 2));
+}
+
+void
+fix_computer(INT no, NGroup &all, std::map<INT, INT> &numGroupMap, NNet &internet) {
+  BOOL      found_group = FALSE;
+  std::vector<INT> group_connected;
+  for(INT i = 0; i < internet.size(); i++){
+    NGroup * group = & internet.at(i);
+    for(INT j = 0; j < group->size(); j++){
+      Node * node = group->at(j);
+      if(calc_distance(node, all.at(no)) <= max_d){
+        // OK
+        group_connected.push_back(i);
+        found_group = TRUE;
+        break;
+      }
+    }
+  }
+  if(!found_group) {
+    INT newGroup = internet.size();
+    NGroup *np = new NGroup();
+    np->push_back(all[no]);
+    internet.push_back(*np);
+    numGroupMap.insert(std::make_pair(no, newGroup));
+  }else{
+    // New Group then
+    if(group_connected.size() == 1){
+      internet[group_connected[0]].push_back(all[no]);
+      numGroupMap.insert(std::make_pair(no, group_connected.at(0)));
+    }else if(group_connected.size() > 1){
+      NGroup * first = &internet[group_connected[0]];
+      for(INT i = 1; i < group_connected.size(); i++){
+        //internet[group_connected[0]].
+        first->insert(first->end(), internet[group_connected[i]].begin(), internet[group_connected[i]].end());
+        for(NGroup::iterator it = internet[group_connected[i]].begin(); it != internet[group_connected[i]].end(); it++ ){
+          Node * st = (*it);
+          numGroupMap[st->computerNo] = group_connected[0];
+        }
+        internet[group_connected[i]].clear();
+      }
+      numGroupMap.insert(std::make_pair(no, group_connected.at(0)));
+    }
+  }
+
+}
+
+void one_trial() {
+  INT         vex_count  = 0;
+  INT         edge_count = 0;
+  INT         lhs        = 0;
+  INT         rhs        = 0;
+
+  cin         >> vex_count;
+  cin         >> max_d;
+
+  std::map<INT, INT>   computerGroupMap;
+  NNet                 internet;
+  NGroup               all_computers;
+
+
+  for (UINT i = 0; i < vex_count; i++) {
+    INT       x, y;
+    cin       >> x >> y;
+    all_computers.push_back(new Node(i, x, y));
+  }
+
+  std::string action;
+
+  while(cin >> action) {
+    // Create Group
+    INT computer_no, left, right;
+    if (action == "O") {
+      cin >> computer_no;
+      computer_no --;
+      fix_computer(computer_no, all_computers, computerGroupMap, internet);
+    }else if (action == "S") {
+      cin >> left >> right;
+      left--;
+      right--;
+      INT gp1 = computerGroupMap.count(left) > 0 ? computerGroupMap.at(left) : -1;
+      INT gp2 = computerGroupMap.count(right) > 0 ? computerGroupMap.at(right) : -1;
+      if (gp1 == gp2 && gp1 != -1) {
+        cout << "SUCCESS" << endl;
+      } else {
+        cout << "FAIL" << endl;
+      }
+    }
+  }
+}
+
+
+INT main(){
+  INT trials = 0;
+  //cin >> trials;
+  //while(trials--) one_trial();
+  one_trial();
+  getchar();
+  getchar();
+  getchar();
+}
+
+/**
+INPUT
+
+
+ */
+
+
+/**
+
+ 7
+0 1 2 3 4 5 6
+9
+0 1 28
+0 5 10
+1 2 16
+3 2 12
+3 6 18
+4 6 24
+4 5 25
+3 4 22
+1 6 14
+6
+
+ */
