@@ -1,4 +1,3 @@
-
 //
 // Created by lugt on 2018/11/27.
 #include <iostream>
@@ -276,6 +275,16 @@ T find_data_binary(T num){
   return 0;
 }
 
+INT v(INT i ){
+  if(i == 0) return 0;
+  INT delim = i % 2;
+  i = i / 2;
+  if(delim == 0) delim = -1;
+  i *= i;
+  i *= delim;
+  return i;
+}
+
 INT Hash_int_data(INT data) {
   return data % 11;
 }
@@ -293,8 +302,15 @@ void Insert_hash_num(INT **hash, INT len, INT data) {
     Insert_to_table(key, hash, data);
     return;
   } else {
-    while (hash[key] != NULL) key = (key + 1) % len;
-    Insert_to_table(key, hash, data);
+    INT i = 0;
+    INT pos = v(i) + key;
+    while (hash[pos] != NULL) {
+      i++;
+      pos = v(i) + key;
+      while(pos < 0) pos += len;
+      pos = pos % len;
+    }
+    Insert_to_table(pos, hash, data);
     return;
   }
   
@@ -314,7 +330,9 @@ void Search_hash(INT **hash, INT hash_len, INT temp){
   }else{
     searchCount = 0;
     for(INT i = 0; i < hash_len; i++) {
-      INT pos = (i + key) % hash_len;
+      INT pos = (v(i) + key);
+      while(pos < 0) pos += hash_len;
+      pos = pos % hash_len;
       searchCount ++;
       if(hash[pos] == NULL){
 	cout << "0 " << searchCount;    
