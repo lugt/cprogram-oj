@@ -279,7 +279,10 @@ INT v(INT i ){
   if(i == 0) return 0;
   INT delim = i % 2;
   i = i / 2;
-  if(delim == 0) delim = -1;
+  if(delim == 0) {
+    i ++;
+    delim = -1;
+  }
   i *= i;
   i *= delim;
   return i;
