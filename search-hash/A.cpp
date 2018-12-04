@@ -40,6 +40,10 @@ typedef const char**           CCHPPTR;
 #define NULLPTR NULL
 #define FALSE ((BOOL) 0)
 #define TRUE  ((BOOL) 1)
+#define ff(end, i, func) for(INT i = 0; i < end; i++) func;
+#define fe(start, end, i, func) for(INT i = start; i < end; i++) func;
+#define isnull(v, func) if((v) == NULL) {func};
+#define isvalid(v, func) if((v) != NULL) {func};
 
 INTPTR "C" {
 INTPTR void *Get_some_thing(void *b, int c, size_t len);
@@ -279,6 +283,7 @@ INT Hash_int_data(INT data) {
 void Insert_to_table(INT pos, INT **hash, INT data) {
     hash[pos] = new INT[1];
     *(hash[pos]) = data;
+    //printf("saving to pos %d val: %d", pos, data);
 }
 
 void Insert_hash_num(INT **hash, INT len, INT data) {
@@ -288,35 +293,46 @@ void Insert_hash_num(INT **hash, INT len, INT data) {
     Insert_to_table(key, hash, data);
     return;
   } else {
-    while (hash[key] != NULL) key++;
+    while (hash[key] != NULL) key = (key + 1) % len;
     Insert_to_table(key, hash, data);
+    return;
   }
   
 }
 
 INT searchCount = 0;
 
-void Search_hash_len(INT **hash, INT hash_len; INT temp){
+void Search_hash(INT **hash, INT hash_len, INT temp){
   INT key = Hash_int_data(temp);
-  if ((searchCount ++, hash[key] == NULL)){
-	cout << "0 " << searchCount;    
-	return;
-  } else if (hash[key] == temp) {
-	cout << "1 " << searchCount << " " << key;
-	return;
+  searchCount = 1;
+  if (hash[key] == NULL){
+    cout << "0 " << searchCount;    
+    return;
+  } else if (*(hash[key]) == temp) {
+    cout << "1 " << searchCount << " " << (key+1);
+    return;
   }else{
+    searchCount = 0;
     for(INT i = 0; i < hash_len; i++) {
-      INT pos = (i + hash_len) % hash_len;
+      INT pos = (i + key) % hash_len;
       searchCount ++;
       if(hash[pos] == NULL){
 	cout << "0 " << searchCount;    
 	return;
-      } else if (hash[pos] == temp) {
-	cout << "1 " << searchCount << " " << pos;
+      } else if (*(hash[pos]) == temp) {
+	cout << "1 " << searchCount << " " << (pos + 1);
 	return;
       }
     }
   }
+}
+
+void Print_hash_table(INT **hash, INT len){
+  ff(len, i, {
+      isnull(hash[i], { cout << "NULL "; });	      
+      isvalid(hash[i], { cout << *(hash[i]) << " ";});
+  });
+  cout << endl;
 }
 
 void one_trial(){
@@ -326,7 +342,7 @@ void one_trial(){
   INT  temp = 0;
   cin >> hash_len >> hash_in;
   INT **hash = new INT*[hash_len];
-  for(INT i = 0; i < hash_len ; i++){
+  for(INT i = 0; i < hash_in ; i++){
     cin >> temp;
     Insert_hash_num(hash, hash_len, temp);
   }
