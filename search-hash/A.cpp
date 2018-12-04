@@ -330,7 +330,7 @@ void Search_hash(INT **hash, INT hash_len, INT temp){
 void Print_hash_table(INT **hash, INT len){
   ff(len, i, {
       isnull(hash[i], { cout << "NULL "; });	      
-      isvalid(hash[i], { cout << *(hash[i]) << " ";});
+      isvalid(hash[i], { cout << *(hash[i]); if(i != len - 1) cout << " "; });
   });
   cout << endl;
 }
