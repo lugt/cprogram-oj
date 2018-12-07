@@ -280,68 +280,70 @@ INT Hash_int_data(INT data) {
   return data % 11;
 }
 
-void Insert_to_table(INT pos, INT **hash, INT data) {
-    hash[pos] = new INT[1];
-    *(hash[pos]) = data;
+void Insert_to_table(INT pos, INT ***hash, INT data) {
+    if(hash[pos] == NULL){
+      hash[pos] = (INT **) new INT*[1000];
+    }
+    INT **arr = hash[pos];
+    for(UINT i = 0; i < 1000; i++){
+      if(arr[i] == NULL){
+	arr[i] = (INT *) new INT[1];
+	INT * pp =  (arr[i]);
+	pp[0] = data;
+	return;
+      }
+    }
     //printf("saving to pos %d val: %d", pos, data);
 }
 
-void Insert_hash_num(INT **hash, INT len, INT data) {
+void Insert_hash_num(INT ***hash, INT len, INT data) {
   INT key = Hash_int_data(data);
-  if(hash[key] == NULL){
-    // Okay to insert an immutable data
-    Insert_to_table(key, hash, data);
-    return;
-  } else {
-    while (hash[key] != NULL) key = (key + 1) % len;
-    Insert_to_table(key, hash, data);
-    return;
-  }
-  
+  Insert_to_table(key, hash, data);  
 }
 
 INT searchCount = 0;
 
-void Search_hash(INT **hash, INT hash_len, INT temp){
+void Search_hash(INT ***hash, INT hash_len, INT temp){
   INT key = Hash_int_data(temp);
   searchCount = 1;
   if (hash[key] == NULL){
     cout << "0 " << searchCount;    
     return;
-  } else if (*(hash[key]) == temp) {
-    cout << "1 " << searchCount << " " << (key+1);
-    return;
-  }else{
-    searchCount = 0;
-    for(INT i = 0; i < hash_len; i++) {
-      INT pos = (i + key) % hash_len;
-      searchCount ++;
-      if(hash[pos] == NULL){
-	cout << "0 " << searchCount;    
-	return;
-      } else if (*(hash[pos]) == temp) {
-	cout << "1 " << searchCount << " " << (pos + 1);
-	return;
-      }
+  } else {
+    INT   pos = 0;
+    INT **arr = hash[key];
+    searchCount ++;
+    if(arr[pos] == NULL){
+      cout << "0 " << searchCount;
+      return;
+    } else if (*(arr[pos]) == temp) {
+      cout << "1 " << searchCount << " " << (pos + 1);
+      return;
     }
   }
 }
 
-void Print_hash_table(INT **hash, INT len){
+void Print_hash_table(INT ***hash, INT len){
   ff(len, i, {
       isnull(hash[i], { cout << "NULL "; });	      
-      isvalid(hash[i], { cout << *(hash[i]); if(i != len - 1) cout << " "; });
+      isvalid(hash[i], {
+	  INT **arr = hash[i];
+	  ff(1000, j, {
+	    isnull(arr[j], { cout << "NULL "; break; });
+	    isvalid(arr[j], { cout << *(arr[j]) << " " ; });
+	  });
+      });
   });
   cout << endl;
 }
 
 void one_trial(){
   // what should I do?
-  INT  hash_len = 0;
   INT  hash_in = 0;
   INT  temp = 0;
-  cin >> hash_len >> hash_in;
-  INT **hash = new INT*[hash_len];
+  INT  hash_len = 11;
+  cin >> hash_in;
+  INT ***hash = new INT**[11];
   for(INT i = 0; i < hash_in ; i++){
     cin >> temp;
     Insert_hash_num(hash, hash_len, temp);
@@ -357,106 +359,12 @@ void one_trial(){
   }
 }
 
-const int BUCKET_NUM = 10;
-
-struct ListNode{
-  explicit ListNode(int i=0):mData(i),mNext(NULL){}
-  ListNode* mNext;
-  int mData;
-};
-
-ListNode* insert(ListNode* head,int val){
-  ListNode dummyNode;
-  ListNode *newNode = new ListNode(val);
-  ListNode *pre,*curr;
-  dummyNode.mNext = head;
-  pre = &dummyNode;
-  curr = head;
-  while(NULL!=curr && curr->mData<=val){
-    pre = curr;
-    curr = curr->mNext;
-  }
-  newNode->mNext = curr;
-  pre->mNext = newNode;
-  return dummyNode.mNext;
-}
-
-
-ListNode* Merge(ListNode *head1,ListNode *head2){
-  ListNode dummyNode;
-  ListNode *dummy = &dummyNode;
-  while(NULL!=head1 && NULL!=head2){
-    if(head1->mData <= head2->mData){
-      dummy->mNext = head1;
-      head1 = head1->mNext;
-    }else{
-      dummy->mNext = head2;
-      head2 = head2->mNext;
-    }
-    dummy = dummy->mNext;
-  }
-  if(NULL!=head1) dummy->mNext = head1;
-  if(NULL!=head2) dummy->mNext = head2;
-
-  return dummyNode.mNext;
-}
-
-void BucketSort(int n,int arr[]){
-  vector<ListNode*> buckets(BUCKET_NUM,(ListNode*)(0));
-  for(int i=0;i<n;++i){
-    int index = arr[i]/BUCKET_NUM;
-    ListNode *head = buckets.at(index);
-    buckets.at(index) = insert(head,arr[i]);
-  }
-  ListNode *head = buckets.at(0);
-  for(int i=1;i<BUCKET_NUM;++i){
-    head = Merge(head,buckets.at(i));
-  }
-  for(int i=0;i<n;++i){
-    arr[i] = head->mData;
-    head = head->mNext;
-  }
-}
-
-
-int min(int x, int y) {
-  return x < y ? x : y;
-}
-
-void merge_sort(int arr[], int len) {
-  int* a = arr;
-  int* b = (int*) malloc(len * sizeof(int));
-  int seg, start;
-  for (seg = 1; seg < len; seg += seg) {
-    for (start = 0; start < len; start += seg + seg) {
-      int low = start, mid = min(start + seg, len), high = min(start + seg + seg, len);
-      int k = low;
-      int start1 = low, end1 = mid;
-      int start2 = mid, end2 = high;
-      while (start1 < end1 && start2 < end2)
-        b[k++] = a[start1] < a[start2] ? a[start1++] : a[start2++];
-      while (start1 < end1)
-        b[k++] = a[start1++];
-      while (start2 < end2)
-        b[k++] = a[start2++];
-    }
-    int* temp = a;
-    a = b;
-    b = temp;
-  }
-  if (a != arr) {
-    int i;
-    for (i = 0; i < len; i++)
-      b[i] = a[i];
-    b = a;
-  }
-  free(b);
-}
 
 INT main(){
-  INT trials = 0;
-  cin >> trials;
-  while(trials--) one_trial();
+  //  INT trials = 0;
+  //cin >> trials;
+  //while(trials--)
+  one_trial();
   getchar();
   getchar();
   getchar();

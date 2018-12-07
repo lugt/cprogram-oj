@@ -15,10 +15,10 @@ using std::cin;
 using std::endl;
 using std::vector;
 
-#define INT_MAX 0x3f3f3f3f
+// #define INT_MAX 0x3f3f3f3f
 
 #define Is_Echo(cond, parm) if(cond) printf parm;
-#define Is_True(cond, parm) /*if(!(cond)) {printf parm; getchar(); getchar(); getchar(); exit(1);}*/
+#define Is_True(cond, parm) if(!(cond)) {printf parm; getchar(); getchar(); getchar(); exit(1);}
 
 typedef int                    INT;
 typedef unsigned int           UINT;
@@ -275,14 +275,15 @@ T find_data_binary(T num){
   return 0;
 }
 
-INT v(INT i ){
+INT v(INT i){
   if(i == 0) return 0;
   INT delim = i % 2;
-  i = i / 2;
   if(delim == 0) {
-    i ++;
     delim = -1;
+  } else {
+    i++;
   }
+  i = i / 2;
   i *= i;
   i *= delim;
   return i;
@@ -295,24 +296,35 @@ INT Hash_int_data(INT data) {
 void Insert_to_table(INT pos, INT **hash, INT data) {
     hash[pos] = new INT[1];
     *(hash[pos]) = data;
-    //printf("saving to pos %d val: %d", pos, data);
+    //printf("saving to pos %d val: %d, at @%lld \n", pos, data, hash[pos]);
+}
+
+INT Calc_pos(INT i, INT key, INT len){
+  INT pos;
+  pos = v(i) + key;
+  if(pos < 0) pos = len + (pos % len);
+  pos = (pos + len) % len;
+  return pos;
 }
 
 void Insert_hash_num(INT **hash, INT len, INT data) {
   INT key = Hash_int_data(data);
+  //printf("data : %d, key : %d \n", data, key);
+  //printf("hash at %d is @%lld\n", key, (INT64) hash[key]);
   if(hash[key] == NULL){
     // Okay to insert an immutable data
     Insert_to_table(key, hash, data);
     return;
   } else {
-    INT i = 0;
-    INT pos = v(i) + key;
-    while (hash[pos] != NULL) {
+    //printf("        --- data @%lld is %d \n", (INT64) hash[key], *(hash[key]));
+    INT i   = 0;
+    INT pos = key;
+    do {
       i++;
-      pos = v(i) + key;
-      while(pos < 0) pos += len;
-      pos = pos % len;
-    }
+      pos = Calc_pos(i, key, len);
+      //printf("checking pos : v(%d)=%d, key=%d, pos=%d \n", i, v(i), key, pos);
+      Is_True(i < len, ("INTERNAL ERROR : i infini loops, %d \n", i));
+    } while (hash[pos] != NULL);
     Insert_to_table(pos, hash, data);
     return;
   }
@@ -343,6 +355,9 @@ void Search_hash(INT **hash, INT hash_len, INT temp){
       } else if (*(hash[pos]) == temp) {
 	cout << "1 " << searchCount << " " << (pos + 1);
 	return;
+      } else if (i > hash_len) {
+	cout << "0 " << searchCount;    
+	return;
       }
     }
   }
@@ -356,6 +371,15 @@ void Print_hash_table(INT **hash, INT len){
   cout << endl;
 }
 
+void test(){
+  INT k[] = {0, 1, -1, 4,-4,9,-9};
+  for(INT i = 0; i < 7; i++){
+    Is_True(v(i) == k[i],
+	    ("v(%d) error now is %d, should be %d \n", i,
+	     v(i), k[i]));
+  }
+}
+
 void one_trial(){
   // what should I do?
   INT  hash_len = 0;
@@ -363,6 +387,7 @@ void one_trial(){
   INT  temp = 0;
   cin >> hash_len >> hash_in;
   INT **hash = new INT*[hash_len];
+  memset(hash, 0, sizeof(INT *) * hash_len);
   for(INT i = 0; i < hash_in ; i++){
     cin >> temp;
     Insert_hash_num(hash, hash_len, temp);
@@ -475,6 +500,7 @@ void merge_sort(int arr[], int len) {
 }
 
 INT main(){
+  test();
   INT trials = 0;
   cin >> trials;
   while(trials--) one_trial();
