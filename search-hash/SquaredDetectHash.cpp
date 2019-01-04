@@ -307,23 +307,42 @@ INT Calc_pos(INT i, INT key, INT len){
   return pos;
 }
 
+template<typename T>
+void Print_memory_block(T *ptr, INT len, INT fold){
+  if(fold == 0) {
+    fold = 20;
+  }
+
+  printf("[DEBUG] Block %ld bit %d : \n ", sizeof(T) * 8, len);
+
+  ff(len, i, {
+    if(i != 0 && i % fold == 0) {
+      cout << endl;
+    }
+    cout << ((i % fold == 0) ? "" : ",") << ptr[i];
+  });
+  cout << endl;
+}
+
 void Insert_hash_num(INT **hash, INT len, INT data) {
   INT key = Hash_int_data(data);
   //printf("data : %d, key : %d \n", data, key);
   //printf("hash at %d is @%lld\n", key, (INT64) hash[key]);
+  printf("checking pos : v(0)=%d, key=%d, pos=%d val=%0x \n", 0, key, key, (INT64) hash[key]);
   if(hash[key] == NULL){
     // Okay to insert an immutable data
     Insert_to_table(key, hash, data);
     return;
   } else {
     //printf("        --- data @%lld is %d \n", (INT64) hash[key], *(hash[key]));
-    INT i   = 0;
-    INT pos = key;
+    INT   i     = 0;
+    INT   pos;
+    INT  *visited = new INT[len];
     do {
       i++;
       pos = Calc_pos(i, key, len);
-      //printf("checking pos : v(%d)=%d, key=%d, pos=%d \n", i, v(i), key, pos);
-      Is_True(i < len, ("INTERNAL ERROR : i infini loops, %d \n", i));
+      printf("checking pos : v(%d)=%d, key=%d, pos=%d val=%#0llx inserting %d \n", i, v(i), key, pos, (INT64) hash[pos], data);
+      Is_True(i < len + 3, ("INTERNAL ERROR : i infini loops, %d \n", (Print_memory_block<INT *>(hash, len, 0), i)));
     } while (hash[pos] != NULL);
     Insert_to_table(pos, hash, data);
     return;
@@ -333,31 +352,28 @@ void Insert_hash_num(INT **hash, INT len, INT data) {
 
 INT searchCount = 0;
 
-void Search_hash(INT **hash, INT hash_len, INT temp){
-  INT key = Hash_int_data(temp);
+void Search_hash(INT **hash, INT hash_len, INT goalNum) {
+  INT key = Hash_int_data(goalNum);
   searchCount = 1;
-  if (hash[key] == NULL){
-    cout << "0 " << searchCount;    
+  if (hash[key] == NULL) {
+    cout << "0 " << searchCount;
     return;
-  } else if (*(hash[key]) == temp) {
-    cout << "1 " << searchCount << " " << (key+1);
+  } else if (*(hash[key]) == goalNum) {
+    cout << "1 " << searchCount << " " << (key + 1);
     return;
-  }else{
+  } else {
     searchCount = 0;
-    for(INT i = 0; i < hash_len; i++) {
+    for (INT i = 0; i < hash_len; i++) {
       INT pos = (v(i) + key);
-      while(pos < 0) pos += hash_len;
+      while (pos < 0) pos += hash_len;
       pos = pos % hash_len;
-      searchCount ++;
-      if(hash[pos] == NULL){
-	cout << "0 " << searchCount;    
-	return;
-      } else if (*(hash[pos]) == temp) {
-	cout << "1 " << searchCount << " " << (pos + 1);
-	return;
-      } else if (i > hash_len) {
-	cout << "0 " << searchCount;    
-	return;
+      searchCount++;
+      if (hash[pos] == NULL || i > hash_len) {
+        cout << "0 " << searchCount;
+        return;
+      } else if (*(hash[pos]) == goalNum) {
+        cout << "1 " << searchCount << " " << (pos + 1);
+        return;
       }
     }
   }
@@ -372,7 +388,7 @@ void Print_hash_table(INT **hash, INT len){
 }
 
 void test(){
-  INT k[] = {0, 1, -1, 4,-4,9,-9};
+  INT k[] = {0, 1, -1, 4, -4, 9, -9};
   for(INT i = 0; i < 7; i++){
     Is_True(v(i) == k[i],
 	    ("v(%d) error now is %d, should be %d \n", i,
@@ -405,99 +421,10 @@ void one_trial(){
 
 const int BUCKET_NUM = 10;
 
-struct ListNode{
-  explicit ListNode(int i=0):mData(i),mNext(NULL){}
-  ListNode* mNext;
-  int mData;
-};
-
-ListNode* insert(ListNode* head,int val){
-  ListNode dummyNode;
-  ListNode *newNode = new ListNode(val);
-  ListNode *pre,*curr;
-  dummyNode.mNext = head;
-  pre = &dummyNode;
-  curr = head;
-  while(NULL!=curr && curr->mData<=val){
-    pre = curr;
-    curr = curr->mNext;
-  }
-  newNode->mNext = curr;
-  pre->mNext = newNode;
-  return dummyNode.mNext;
-}
-
-
-ListNode* Merge(ListNode *head1,ListNode *head2){
-  ListNode dummyNode;
-  ListNode *dummy = &dummyNode;
-  while(NULL!=head1 && NULL!=head2){
-    if(head1->mData <= head2->mData){
-      dummy->mNext = head1;
-      head1 = head1->mNext;
-    }else{
-      dummy->mNext = head2;
-      head2 = head2->mNext;
-    }
-    dummy = dummy->mNext;
-  }
-  if(NULL!=head1) dummy->mNext = head1;
-  if(NULL!=head2) dummy->mNext = head2;
-
-  return dummyNode.mNext;
-}
-
-void BucketSort(int n,int arr[]){
-  vector<ListNode*> buckets(BUCKET_NUM,(ListNode*)(0));
-  for(int i=0;i<n;++i){
-    int index = arr[i]/BUCKET_NUM;
-    ListNode *head = buckets.at(index);
-    buckets.at(index) = insert(head,arr[i]);
-  }
-  ListNode *head = buckets.at(0);
-  for(int i=1;i<BUCKET_NUM;++i){
-    head = Merge(head,buckets.at(i));
-  }
-  for(int i=0;i<n;++i){
-    arr[i] = head->mData;
-    head = head->mNext;
-  }
-}
-
-
 int min(int x, int y) {
   return x < y ? x : y;
 }
 
-void merge_sort(int arr[], int len) {
-  int* a = arr;
-  int* b = (int*) malloc(len * sizeof(int));
-  int seg, start;
-  for (seg = 1; seg < len; seg += seg) {
-    for (start = 0; start < len; start += seg + seg) {
-      int low = start, mid = min(start + seg, len), high = min(start + seg + seg, len);
-      int k = low;
-      int start1 = low, end1 = mid;
-      int start2 = mid, end2 = high;
-      while (start1 < end1 && start2 < end2)
-        b[k++] = a[start1] < a[start2] ? a[start1++] : a[start2++];
-      while (start1 < end1)
-        b[k++] = a[start1++];
-      while (start2 < end2)
-        b[k++] = a[start2++];
-    }
-    int* temp = a;
-    a = b;
-    b = temp;
-  }
-  if (a != arr) {
-    int i;
-    for (i = 0; i < len; i++)
-      b[i] = a[i];
-    b = a;
-  }
-  free(b);
-}
 
 INT main(){
   test();
