@@ -80,19 +80,6 @@ void ip (INT *a, INT j, INT i, INT g, INT dc) {
 
 void ss (INT *a, INT dc){
   // sort by gap of dc
-  INT gap = dc / 2;
-  for (;gap > 0; gap /= 2) {
-    for (INT i = gap - 1; i < dc; i ++){
-      INT temp = a[i];
-      INT j    = i;
-      while ( j >= gap && a[j - gap] < temp) {
-	a[j]   = a[j - gap];
-	j     -= gap;
-      }
-      a[j]     = temp;
-    }
-    pr(a, dc);
-  }
 }
 
 void one_trial(){
@@ -121,5 +108,3 @@ INT main(){
   getchar();
   getchar();
 }
-
-/* Seal Sort By Jason Lu */
