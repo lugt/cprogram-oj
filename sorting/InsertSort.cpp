@@ -76,41 +76,24 @@ void ip (INT *a, INT i, INT j) {
     a[j] = m;
 }
 
-void qss (INT *a, INT dc, INT lo, INT hi){
-  if(lo >= hi) return;
-  INT pivot;
-  INT i     = lo;
-  INT j     = hi;
-  INT flag = 0;
-  while(i<j) {
-    if (a[i] > a[j]) {
-      pivot = a[i];
-      a[i] = a[j];
-      a[j] = pivot;
-      if (flag == 0) {
-        i++;
-        flag = 1;
+void ss (INT *a, INT dc){
+  INT * array= new INT[dc + 5];
+  ff(dc, o, {
+    array[o+1] = a[o];
+  })
+  for(INT i = 2; i <= dc; i++) {
+    array[0] = array[i];
+    for (INT j = i - 1; j >= 1; j--) {
+      if (array[j] > array[0]) {
+        array[j + 1] = array[j];
+        array[j] = array[0];
       } else {
-        j--;
-        flag = 0;
-      }
-    } else {
-      if (flag == 0) {
-        j--;
-      } else {
-        i++;
+        array[j + 1] = array[0];
+        break;
       }
     }
+    pr(array + 1, dc);
   }
-  pr(a, dc);
-  qss(a, dc, lo, i - 1);
-  qss(a, dc, i + 1, hi);
-}
-
-void ss (INT *a, INT dc){
-  // sort by quicksort
-  INT pivot = a[0];
-  qss(a, dc, 0, dc - 1);
 }
 
 void one_trial(){
@@ -125,39 +108,16 @@ void one_trial(){
   d(ff (dc, i, {
       cout << a[i] << " "; 
   }));
-  ss(a, dc);
   d(cout << "]" << endl);
-  cout << endl;
+  ss(a, dc);
 }
 
 INT main(){
   INT trials = 0;
-  cin >> trials;
-  while(trials--)
+  //cin >> trials;
+  //while(trials--)
     one_trial();
   getchar();
   getchar();
   getchar();
 }
-
-/*
- * int n;
-	cin>>n;
-	int *array= new int[n+ 5];
-	for(int i= 1; i<= n ;i++)
-	   cin>>array[i];
-
-	for(int i= 2; i<= n; i++){
-		array[0]= array[i];
-		for(int j= i- 1; j>= 1; j--){
-			if(array[j]> array[0]){
-				array[j+ 1]= array[j];
-				array[j]= array[0];
-			}
-			else{
-				array[j+ 1]= array[0];
-				break;
-			}
-		}
-		print(array, n);
- */

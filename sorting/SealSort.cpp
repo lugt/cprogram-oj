@@ -86,8 +86,8 @@ void ss (INT *a, INT dc){
       INT temp = a[i];
       INT j    = i;
       while ( j >= gap && a[j - gap] < temp) {
-	a[j]   = a[j - gap];
-	j     -= gap;
+        a[j]   = a[j - gap];
+        j     -= gap;
       }
       a[j]     = temp;
     }
@@ -109,14 +109,17 @@ void one_trial(){
   }));
   ss(a, dc);
   d(cout << "]" << endl);
-  //  cout << endl;
 }
 
 INT main(){
   INT trials = 0;
   cin >> trials;
-  while(trials--)
+  while(trials--) {
     one_trial();
+    if(trials != 0){
+      cout << endl;
+    }
+  }
   getchar();
   getchar();
   getchar();
