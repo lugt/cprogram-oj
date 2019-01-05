@@ -3,4 +3,4 @@ project(finale_datastruct)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(finale_datastruct finale_datastruct.cpp)
+add_executable(navigator navigator.cpp)
