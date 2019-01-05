@@ -113,7 +113,7 @@ BOOL Parse_command(CONTEXT &ctx, std::string &command){
   if(command == "QUIT") return false;
   if(command == "VISIT"){
     cin >> host;
-    ctx.backward.push_back(host);
+    ctx.backward.push_back(*cur);
     ctx.forward.clear();
     cur = new std::string(host);
     cout << host << endl;
@@ -125,7 +125,7 @@ BOOL Parse_command(CONTEXT &ctx, std::string &command){
     }
     std::string t = ctx.backward.back();
     ctx.backward.pop_back();
-    ctx.forward.push_back(t);
+    ctx.forward.push_back(*cur);
     cur = new std::string(t);
     cout << t << endl;
   }
@@ -136,7 +136,7 @@ BOOL Parse_command(CONTEXT &ctx, std::string &command){
     }
     std::string t = ctx.forward.back();
     ctx.forward.pop_back();
-    ctx.backward.push_back(t);
+    ctx.backward.push_back(*cur);
     cur = new std::string(t);
     cout << t << endl;
   }
@@ -147,6 +147,7 @@ void one_trial(){
   // what should I do?
   CONTEXT ctx;
   std::string command;
+  cur = new std::string("http://www.acm.org/");
   while (true){
     cin >> command;
     if(!Parse_command(ctx, command)){
