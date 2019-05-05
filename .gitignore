@@ -1,6 +1,7 @@
 **\.idea
 *.o
-*,exe
+*.exe
 **\CMakeFiles
 **\cmake-build-debug
 *.bak
+**/*~
